@@ -1,7 +1,6 @@
 import { Chart } from './chart';
 import { DataFactory } from './data';
 import { Slider } from './slider';
-import ua from 'universal-analytics'
 
 /**
  * Instantiate a storyline
@@ -13,7 +12,9 @@ import ua from 'universal-analytics'
 export class Storyline {
 
     static fetchHeaders(dataConfig) {
-        return DataFactory.fetchHeaders(dataConfig)
+        let hdrs = DataFactory.fetchHeaders(dataConfig)
+        console.log("Hdrs",hdrs)
+        return hdrs
     }
 
     constructor(targetId, dataConfig) {
@@ -30,7 +31,7 @@ export class Storyline {
     }
     init() {
             var self = this;
-            this.initTracking();
+            console.log("cfg",this.dataConfig)
             this.validateConfig(this.dataConfig);
             this.setDimensions();
             this.grabData(this.dataConfig).then(function(dataObj) {
@@ -57,32 +58,28 @@ export class Storyline {
         var self = this
             // we need chart.datetime_format for the x axis and for cards so use input datetime format as a fallback.
         Object.keys(config).map(function(thing) {
+            console.log("config",config,"thing",thing)
             Object.keys(config[thing]).map(function(con) {
-                if (config[thing][con].indexOf('%25') > -1) {
-                    self.dataConfig[thing][con] = self.dataConfig[thing][con].replace(/%25/g, "%")
-                } else if (config[thing][con].indexOf('%20') > -1) {
-                    self.dataConfig[thing][con] = self.dataConfig[thing][con].replace(/%20/g, " ")
-                } else if (config[thing][con].indexOf('"') > -1) {
-                    self.dataConfig[thing][con] = self.dataConfig[thing][con].replace(/"/g, "")
+                console.log("con",con)
+                if (con != "start_at_card") {
+                    if (config[thing][con].indexOf('%25') > -1) {
+                        self.dataConfig[thing][con] = self.dataConfig[thing][con].replace(/%25/g, "%")
+                    } else if (config[thing][con].indexOf('%20') > -1) {
+                        self.dataConfig[thing][con] = self.dataConfig[thing][con].replace(/%20/g, " ")
+                    } else if (config[thing][con].indexOf('"') > -1) {
+                        self.dataConfig[thing][con] = self.dataConfig[thing][con].replace(/"/g, "")
+                    }
                 }
             })
         })
+        console.log("Final cfg:",self.dataConfig)
         if (!config.chart) { this.dataConfig.chart = {} }
         if (!config.chart.datetime_format) { this.dataConfig.chart.datetime_format = this.dataConfig.data.datetime_format }
 
     }
-    initTracking() {
-        try {
-            var visitor = ua('UA-27829802-5', { https: true });
-            visitor.pageview({ dl: document.location.href }).send();
-            this.visitor = visitor;
-        } catch (e) { /* we don't want any problem here to sidetrack things */ }
-    }
     trackEvent(category, action, label, value) {
-        if (this.visitor) {
-            this.visitor.event(category, action, label, value).send();
-        }
-    }
+        // dummy
+    }    
     resetWidth(newWidth, targetType) {
             this.trackEvent('resize', targetType)
             this.width = newWidth;
@@ -103,7 +100,9 @@ export class Storyline {
          */
     grabData() {
         var data = new DataFactory;
-        return data.fetchSheetData(this.dataConfig);
+        let fs = data.fetchSheetData(this.dataConfig);
+        console.log("Data: ",fs)
+        return fs
     }
     initSlider(lastActiveCard) {
         var activeCard = !!lastActiveCard ? lastActiveCard : !!this.data.activeCard ? this.data.activeCard : 0

@@ -1,7 +1,7 @@
 {
   "data": {
-    "url": "https://docs.google.com/spreadsheets/d/1amj29A-YdAXQu18PipfgJ6biylaUhYLBxNiP4PpzW5g/pubhtml",
-    "data_column_name": "US Unemployment Rate",
+    "url": "/assets/unemployment.csv",
+    "data_column_name": "rate",
     "datetime_format": "%m/%d/%y",
     "datetime_column_name": "date"
   },

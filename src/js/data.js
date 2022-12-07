@@ -130,8 +130,9 @@ export class DataFactory {
                     `matches your data and that your date format is correct. ` +
                     `[date string: ${raw_x} ; format: ${datetime_format}]`)
             }
-            if (isNaN(parseInt(y))) {
-                errorMessages.push(`At least one value in the data column (${config.data.data_column_name}) is not a number. check that the column name matches your data`)
+            //if (isNaN(parseInt(y))) {
+            if (isNaN(parseFloat(y))) {
+                    errorMessages.push(`At least one value in the data column (${config.data.data_column_name}) is not a number. check that the column name matches your data: `,y)
             }
 
             if (errorMessages.length > 0) {
@@ -207,6 +208,7 @@ export class DataFactory {
     static getCSVURL(config) {
         if (config && config.data) {
             let url = config.data.url
+            /*
             if (url && url.match(GOOGLE_SHEETS_URL_PATTERN)) {
                 let match = url.match(GOOGLE_SHEETS_URL_PATTERN)
                 url = `${match[1]}/pub?output=csv`
@@ -214,6 +216,8 @@ export class DataFactory {
                     url = `${config.proxy}${url}`
                 }
             };
+            */
+            console.log("Url:",url)
             return url
         }
         return null;
@@ -232,6 +236,7 @@ export class DataFactory {
                 .then(function(response) {
                     if (response) {
                         var rows = parse(response)
+                        console.log("rows:",rows)
                         if (rows && rows.length > 0) {
                             resolve(rows[0].map(transformHeaders))
                         }
